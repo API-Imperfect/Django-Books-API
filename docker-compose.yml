@@ -1,0 +1,32 @@
+version: "3"
+
+services:
+  books:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python3 manage.py runserver 0.0.0.0:8000
+    # volumes here mounts code to the container
+    # and updates container where a change to source code is made
+    # without this you would have to rebuild the image each time changes are made to source code
+    volumes:
+      - .:/app   
+    ports:
+      - 8000:8000
+    env_file:
+      - .env.dev
+    depends_on:
+      - postgres-db
+
+  postgres-db:
+    image: postgres:12-alpine
+    volumes:
+      #mysql:var/lib/mysql
+      - postgres_data:/var/lib/postgresql/data/   
+    environment: 
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin123456
+      - POSTGRES_DB=books_dev
+volumes:
+  postgres_data:
+    driver: local       
